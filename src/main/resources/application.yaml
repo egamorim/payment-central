@@ -1,0 +1,25 @@
+camel:
+  component:
+    servlet:
+      mapping:
+        contextPath: /zup/*
+auto.offset.reset: earliest
+
+aws:
+  dynamodb:
+    endpoint: http://localhost:8000/
+  accesskey: fakekey
+  secretkey: fakesecret
+
+payments:
+  sqs:
+    queue:
+      ted: ted-sqs-queue
+      doc: doc-sqs-queue
+      pix: pix-sqs-queue
+  kafka:
+    url: localhost:9092
+    channel: 8
+    ted-included:
+      topic-name: ted-kafka-topic
+
