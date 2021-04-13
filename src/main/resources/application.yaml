@@ -19,6 +19,7 @@ payments:
     url: https://sqs.sa-east-1.amazonaws.com/499137437067/ted-sqs-queue
     accesskey: AKIAXINXI3WFZEYFI3HQ
     secretkey: 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
+    aws-sqs: aws-sqs://%s?accessKey=${payments.sqs.accesskey}&secretKey=${payments.sqs.secretkey}
     queue:
       ted: ted-sqs-queue
       doc: doc-sqs-queue
