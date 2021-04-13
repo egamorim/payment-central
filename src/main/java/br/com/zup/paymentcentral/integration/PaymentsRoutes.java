@@ -26,7 +26,7 @@ public class PaymentsRoutes extends RouteBuilder {
     private final KafkaProperties kafkaProperties;
     private final Environment env;
 
-    public PaymentsRoutes(AmazonDynamoDB dynamoDBClient, KafkaProperties kafkaProperties,Environment env) {
+    public PaymentsRoutes(AmazonDynamoDB dynamoDBClient, KafkaProperties kafkaProperties, Environment env) {
         this.dynamoDBClient = dynamoDBClient;
         this.kafkaProperties = kafkaProperties;
         this.env = env;
@@ -53,22 +53,25 @@ public class PaymentsRoutes extends RouteBuilder {
                 .post("/").route()
                 .marshal().json(JsonLibrary.Gson)
                 .unmarshal().json(JsonLibrary.Gson)
-                .to(String.format(KAFKA_TED_INCLUDED, kafkaProperties.getTedIncluded().getTopicName(), kafkaProperties.getUrl()))
+                .to(String.format(kafkaProperties.getKafkaBroker(), kafkaProperties.getTedIncluded().getTopicName()))
                 .end();
 
 
         // TODO o payload precisa ser ajustado de acordo com o que vai vir da processor
-        from(String.format(KAFKA_TED_INCLUDED, kafkaProperties.getTedIncluded().getTopicName(), kafkaProperties.getUrl()))
+        from(String.format(kafkaProperties.getKafkaBroker(), kafkaProperties.getTedIncluded().getTopicName()))
                 .log("New TED requested: ${body}")
-                .marshal().json(JsonLibrary.Gson)
-                .unmarshal().json(JsonLibrary.Gson)
+                .unmarshal()
+                .json(JsonLibrary.Jackson)
+                .marshal().json()
+                .unmarshal(getJacksonDataFormat(PaymentDTO.class))
                 .process((Exchange exchange) -> {
-                    PaymentDTO payment = this.dtoFromExchangeBody(exchange);
-                    exchange.getIn().setHeader("CamelAwsDdbItem", buildDocument(payment));
+                    PaymentDTO paymentDTO = exchange.getIn().getBody(PaymentDTO.class);
+                    //  PaymentDTO payment = this.dtoFromExchangeBody(exchange);
+                    exchange.getIn().setHeader("CamelAwsDdbItem", buildDocument(paymentDTO));
                 })
                 .to("aws-ddb://payments-ted?amazonDDBClient=#" + DYNAMO_DB_CLIENT_ID)
                 .to("aws-sqs://{{payments.sqs.queue.ted}}?accessKey={{aws.accesskey}}&secretKey={{aws.secretkey}}")
-        .end();
+                .end();
 
     }
 
@@ -79,17 +82,14 @@ public class PaymentsRoutes extends RouteBuilder {
 
     //TODO isso precisa de um refacory pra ficar mais elegante
     private Map<String, AttributeValue> buildDocument(PaymentDTO body) {
-        AttributeValue id = new AttributeValue(UUID.randomUUID().toString());
-        AttributeValue sender = new AttributeValue(body.getSender());
-        AttributeValue receiver = new AttributeValue(body.getReceiver());
-        AttributeValue amount = new AttributeValue();
-        amount.setN(body.getAmount().toString());
+        AttributeValue id = new AttributeValue(body.getId().toString());
+        AttributeValue datePayment = new AttributeValue(body.getDatePayment().toString());
+        AttributeValue valuePayment = new AttributeValue(body.getValuePayment().toString());
 
         Map<String, AttributeValue> newBody = new HashMap();
         newBody.put("id", id);
-        newBody.put("sender", sender);
-        newBody.put("receiver", receiver);
-        newBody.put("amount", amount);
+        newBody.put("datePayment", datePayment);
+        newBody.put("valuePayment", valuePayment);
 
         return newBody;
     }

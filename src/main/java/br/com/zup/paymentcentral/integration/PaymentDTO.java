@@ -1,43 +1,39 @@
 package br.com.zup.paymentcentral.integration;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@Builder
 public class PaymentDTO {
 
-    private String sender;
-    private String receiver;
-    private BigDecimal amount;
+    private UUID id;
 
-    public String getSender() {
-        return sender;
-    }
+    @JsonProperty("value_payment")
+    private BigDecimal valuePayment;
 
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
+    @JsonProperty("date_payment")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate datePayment;
 
     @Override
     public String toString() {
         return "PaymentDTO{" +
-                "sender='" + sender + '\'' +
-                ", receiver='" + receiver + '\'' +
-                ", amount=" + amount +
+                "id='" + id.toString() + '\'' +
+                ", value_payment='" + valuePayment.toString() + '\'' +
+                ", date_payment=" + datePayment.toString() +
                 '}';
     }
 }

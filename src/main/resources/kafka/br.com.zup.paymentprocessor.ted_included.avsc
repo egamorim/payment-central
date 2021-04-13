@@ -1,0 +1,19 @@
+{
+  "namespace": "br.com.zup.paymentcentral.ted_included",
+  "name": "TedIncluded",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "date_payment",
+      "type": "string"
+    },
+    {
+      "name": "value_payment",
+      "type": "string"
+    }
+  ]
+}

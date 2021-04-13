@@ -18,8 +18,10 @@ payments:
       doc: doc-sqs-queue
       pix: pix-sqs-queue
   kafka:
-    url: localhost:9092
+    host: localhost
+    port: 9092
+    kafka-broker: kafka:%s?brokers=${payments.kafka.host}:${payments.kafka.port}
     channel: 8
     ted-included:
-      topic-name: ted-kafka-topic
+      topic-name: payments-ted
 

@@ -6,14 +6,24 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotNull;
+
 @Validated
 @Setter
 @Getter
 @ConfigurationProperties("payments.kafka")
 public class KafkaProperties {
 
-    private String url;
+    @NotNull
+    private String host;
 
+    @NotNull
+    private String port;
+
+    @NotNull
+    private String kafkaBroker;
+
+    @NotNull
     private EventProperty tedIncluded;
 
     @Getter
