@@ -58,7 +58,7 @@ public class PaymentsRoutes extends RouteBuilder {
                 .post("/").route()
                 .marshal().json(JsonLibrary.Gson)
                 .unmarshal().json(JsonLibrary.Gson)
-                .to(String.format(KAFKA_TED_INCLUDED, kafkaProperties.getTedIncluded().getTopicName(), kafkaProperties.getUrl()))
+                .to(String.format(KAFKA_TED_INCLUDED, kafkaProperties.getTedIncluded().getTopicName()))
                 .end();
 
 
@@ -71,7 +71,7 @@ public class PaymentsRoutes extends RouteBuilder {
                 .unmarshal(getJacksonDataFormat(PaymentDTO.class))
                 .process((Exchange exchange) -> {
                     PaymentDTO paymentDTO = exchange.getIn().getBody(PaymentDTO.class);
-                    exchange.getIn().setHeader("CamelAwsDdbItem", buildDocument(payment));
+                    exchange.getIn().setHeader("CamelAwsDdbItem", buildDocument(paymentDTO));
                 })
                 .to("aws-ddb://payments-ted?amazonDDBClient=#" + DYNAMO_DB_CLIENT_ID)
                 .to(String.format(SQS_TED_QUEUE, sqsProperties.getQueue().getTed(), sqsProperties.getAccesskey(), sqsProperties.getSecretkey()))
