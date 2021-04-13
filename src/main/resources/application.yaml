@@ -1,5 +1,7 @@
 camel:
   component:
+    aws-sqs:
+      region: SA_EAST_1
     servlet:
       mapping:
         contextPath: /zup/*
@@ -11,8 +13,12 @@ aws:
   accesskey: fakekey
   secretkey: fakesecret
 
+
 payments:
   sqs:
+    url: https://sqs.sa-east-1.amazonaws.com/499137437067/ted-sqs-queue
+    accesskey: AKIAXINXI3WFZEYFI3HQ
+    secretkey: pyMW2dIUeFHathfsWlwJqyOxsemK5Mm3htinSCds
     queue:
       ted: ted-sqs-queue
       doc: doc-sqs-queue

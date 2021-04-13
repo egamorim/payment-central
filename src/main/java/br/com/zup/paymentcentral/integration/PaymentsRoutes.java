@@ -1,6 +1,7 @@
 package br.com.zup.paymentcentral.integration;
 
 import br.com.zup.paymentcentral.config.KafkaProperties;
+import br.com.zup.paymentcentral.config.SQSProperties;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.google.gson.Gson;
@@ -21,14 +22,18 @@ import java.util.UUID;
 public class PaymentsRoutes extends RouteBuilder {
 
     private final String KAFKA_TED_INCLUDED = "kafka:%s?brokers=%s";
+    private final String SQS_TED_QUEUE = "aws-sqs://%s?accessKey=%s&secretKey=%s";
     private static final String DYNAMO_DB_CLIENT_ID = "awsDynamoDBClient";
     private final AmazonDynamoDB dynamoDBClient;
     private final KafkaProperties kafkaProperties;
+    private final SQSProperties sqsProperties;
     private final Environment env;
 
-    public PaymentsRoutes(AmazonDynamoDB dynamoDBClient, KafkaProperties kafkaProperties, Environment env) {
+    public PaymentsRoutes(AmazonDynamoDB dynamoDBClient, KafkaProperties kafkaProperties,Environment env,
+                          SQSProperties sqsProperties) {
         this.dynamoDBClient = dynamoDBClient;
         this.kafkaProperties = kafkaProperties;
+        this.sqsProperties = sqsProperties;
         this.env = env;
     }
 
@@ -53,7 +58,7 @@ public class PaymentsRoutes extends RouteBuilder {
                 .post("/").route()
                 .marshal().json(JsonLibrary.Gson)
                 .unmarshal().json(JsonLibrary.Gson)
-                .to(String.format(kafkaProperties.getKafkaBroker(), kafkaProperties.getTedIncluded().getTopicName()))
+                .to(String.format(KAFKA_TED_INCLUDED, kafkaProperties.getTedIncluded().getTopicName(), kafkaProperties.getUrl()))
                 .end();
 
 
@@ -66,12 +71,11 @@ public class PaymentsRoutes extends RouteBuilder {
                 .unmarshal(getJacksonDataFormat(PaymentDTO.class))
                 .process((Exchange exchange) -> {
                     PaymentDTO paymentDTO = exchange.getIn().getBody(PaymentDTO.class);
-                    //  PaymentDTO payment = this.dtoFromExchangeBody(exchange);
-                    exchange.getIn().setHeader("CamelAwsDdbItem", buildDocument(paymentDTO));
+                    exchange.getIn().setHeader("CamelAwsDdbItem", buildDocument(payment));
                 })
                 .to("aws-ddb://payments-ted?amazonDDBClient=#" + DYNAMO_DB_CLIENT_ID)
-                .to("aws-sqs://{{payments.sqs.queue.ted}}?accessKey={{aws.accesskey}}&secretKey={{aws.secretkey}}")
-                .end();
+                .to(String.format(SQS_TED_QUEUE, sqsProperties.getQueue().getTed(), sqsProperties.getAccesskey(), sqsProperties.getSecretkey()))
+        .end();
 
     }
 
