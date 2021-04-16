@@ -1,25 +1,25 @@
 package br.com.zup.paymentcentral.config;
 
-import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 @Configuration
+@EnableConfigurationProperties(DynamoDBProperties.class)
 public class DynamoDBConfig {
 
     @Value("${aws.dynamodb.endpoint}")
     private String awsDynamoDBEndpoint;
 
-    @Value("${aws.accesskey:fakekey}")
+    @Value("${aws.dynamodb.accesskey:fakekey}")
     private String awsAccessKey;
 
-    @Value("${aws.secretkey:fakesecret}")
+    @Value("${aws.dynamodb.secretkey:fakesecret}")
     private String awsSecretKey;
 
     @Bean

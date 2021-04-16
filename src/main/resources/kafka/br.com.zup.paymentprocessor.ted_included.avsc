@@ -8,11 +8,11 @@
       "type": "string"
     },
     {
-      "name": "date_payment",
+      "name": "payment_date",
       "type": "string"
     },
     {
-      "name": "value_payment",
+      "name": "payment_value",
       "type": "string"
     }
   ]

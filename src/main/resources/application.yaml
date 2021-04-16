@@ -9,10 +9,12 @@ auto.offset.reset: earliest
 
 aws:
   dynamodb:
+    aws-dynamo-dB-client : awsDynamoDBClient
+    aws-ddb: aws-ddb://%s?amazonDDBClient=#${aws.dynamodb.aws-dynamo-dB-client}
     endpoint: http://localhost:8000/
-  accesskey: fakekey
-  secretkey: fakesecret
-
+    accesskey: fakekey
+    secretkey: fakesecret
+    payments-ted: payments-ted
 
 payments:
   sqs:

@@ -20,20 +20,20 @@ public class PaymentDTO {
 
     private UUID id;
 
-    @JsonProperty("value_payment")
-    private BigDecimal valuePayment;
+    @JsonProperty("payment_value")
+    private BigDecimal paymentValue;
 
-    @JsonProperty("date_payment")
+    @JsonProperty("payment_date")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate datePayment;
+    private LocalDate paymentDate;
 
     @Override
     public String toString() {
         return "PaymentDTO{" +
                 "id='" + id.toString() + '\'' +
-                ", value_payment='" + valuePayment.toString() + '\'' +
-                ", date_payment=" + datePayment.toString() +
+                ", payment_value='" + paymentValue.toString() + '\'' +
+                ", payment_date_=" + paymentDate.toString() +
                 '}';
     }
 }
