@@ -18,8 +18,13 @@ public interface CommonsMapper {
     }
 
     default String localDateToCharSequence(LocalDate datePayment) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return datePayment.format(formatter);
+    }
+
+    default LocalDate CharSequenceToLocalDate(String datePayment) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(datePayment, formatter);
     }
 
     default String uuidToCharSequence(UUID uuid) {
